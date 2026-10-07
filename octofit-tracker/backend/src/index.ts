@@ -1,14 +1,14 @@
-import express from 'express';
+import app, { port } from './server.js';
+import { connectDatabase } from './config/database.js';
 
-const app = express();
-const port = 8000;
+async function startServer(): Promise<void> {
+  await connectDatabase();
+  app.listen(port, '0.0.0.0', () => {
+    console.log(`Octofit API listening on port ${port}`);
+  });
+}
 
-app.use(express.json());
-
-app.get('/api/health', (_request, response) => {
-  response.json({ status: 'ok' });
-});
-
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Octofit API listening on port ${port}`);
+startServer().catch((error: unknown) => {
+  console.error('Unable to start Octofit API:', error);
+  process.exitCode = 1;
 });
